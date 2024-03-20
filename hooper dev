@@ -1,0 +1,272 @@
+import requests
+import json
+
+LOGIN_URL = "https://dev7-hooperlab.kellton.net/bapi/uaa/oauth/token"
+
+
+login_data = {
+    "password": "Asdfghjkl@123",
+    "grant_type": "password",
+    "username": "varshitha.vajrala@kellton.com"  # Adjust username here
+}
+
+
+login_header = {
+    "Content-Type": "application/json",
+    "Authorization": "Basic OE5TMjFBT1pRUVRKS0lGTUVIR0M6MmNjN2NlMWMtZDBkMi0xMWVhLTg3ZDAtMDI0MmFjMTMwMDAz"
+}
+
+login_response = requests.post(url=LOGIN_URL, headers=login_header, data=json.dumps(login_data))
+
+if login_response.status_code == 200:
+    print("Login successful.")
+    data=login_response.json()
+    access_token=data.get('access_token')
+    print(data)
+else:
+    print("Login failed. Status code:")
+    
+
+#app list
+app_list_url = 'https://dev7-hooperlab.kellton.net/bapi/v2/service/list?platformType=SVC_FORM'
+app_headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer '+access_token
+}
+applist_response = requests.get(url=app_list_url, headers=app_headers)
+if applist_response.status_code == 200:
+    data = applist_response.json()
+    print(data)
+else:
+    print('Error:', applist_response.text)
+
+
+
+#create app
+create_url = "https://dev7-hooperlab.kellton.net/bapi/v2/service/create"
+
+create_data={
+    
+    
+  "iconUrl": "",
+  "platformType": "SVC_FORM",
+  "fields": {
+    "Auto_Number": {
+      "name": "Auto_Number",
+      "label": "Auto Number",
+      "type": "autoNumberUiTemplate",
+      "isSkippable": True,
+      "isSystem": True,
+      "value": "",
+      "columnWidth": "col-6 col-sm-6",
+      "placeholderText": "Auto Number",
+      "showLabel": True,
+      "dataOrientation": "BELOW",
+      "prefix": "",
+      "startNo": 1,
+      "suffix": "",
+      "colorVal": "#000000",
+      "isBold": False,
+      "isItalic": False,
+      "fontSize": 15
+    },
+    "BarCode": {
+      "name": "BarCode",
+      "label": "Bar Code",
+      "type": "barCodeUiTemplate",
+      "isSkippable": False,
+      "isSystem": True,
+      "value": "",
+      "columnWidth": "col-6 col-sm-6",
+      "placeholderText": "Bar Code",
+      "showLabel": True,
+      "dataOrientation": "BELOW",
+      "showAsImage": "CODE39",
+      "showCode": True,
+      "maxChars": 35
+    },
+    "Email": {
+      "name": "Email",
+      "label": "Email",
+      "type": "emailTextUiTemplate",
+      "isSkippable": False,
+      "isSystem": True,
+      "value": "",
+      "columnWidth": "col-6 col-sm-6",
+      "placeholderText": "Email",
+      "showLabel": True,
+      "dataOrientation": "BELOW",
+      "allowCsv": False,
+      "showNotifyOption": False,
+      "allowDuplicates": False,
+      "colorVal": "#000000",
+      "isBold": False,
+      "isItalic": False,
+      "fontSize": 15,
+      "enableQuickAction": True,
+      "showEmailId": True,
+      "enableSending": True
+    },
+    "Date": {
+      "name": "Date",
+      "label": "Date",
+      "type": "datePickerUiTemplate",
+      "isSkippable": False,
+      "isSystem": True,
+      "value": "",
+      "columnWidth": "col-6 col-sm-6",
+      "placeholderText": "Date",
+      "showLabel": True,
+      "dataOrientation": "BELOW",
+      "colorVal": "#000000",
+      "isBold": False,
+      "isItalic": False,
+      "fontSize": 15,
+      "dateFormat": "dd-MMMM-yyyy"
+    }
+  },
+  "configuration": {},
+  "refCatIds": [
+    "5e905c6dbfcb4026b14b87ed"
+  ],
+  "tags": [],
+  "listLabel": "Transactions",
+  "txnOwnerLabel": "Owner",
+  "title": "college",
+  "txnLabel": "college",
+  "description": "college app",
+  "payConfig": {},
+  "tax": []
+}
+
+    
+create_header = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer '+access_token
+}
+create_url_response = requests.post(url=create_url, headers=create_header, data=json.dumps(create_data))
+
+if create_url_response.status_code == 200:
+    data=create_url_response.json()
+    print("App created successfully")
+    print(data)
+else:
+    print("Failed to create App")
+
+
+
+
+#transaction list
+transaction_url="https://dev7-hooperlab.kellton.net/bapi/v2/transaction/list/65d6ed899dc35685be546b52/1/10?vMode=LIST"
+
+transaction_data={
+    "serviceType": "SVC_TYPE_1154",
+    "platformType": "SVC_FORM",
+    "sortCriteria": {
+    "sortOn": "_Created_Date",
+    "sortBy": "DESC"}
+}
+
+transaction_header={
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + access_token
+    }
+
+transaction_response=requests.post(url=transaction_url,headers= transaction_header,data=json.dumps(transaction_data))
+if transaction_response.status_code == 200:
+    data = transaction_response.json()
+    print("List of transactions:", data)
+else:
+    print("Error: Request failed with status code:", transaction_response.status_code)
+
+
+
+#create transaction
+createtransaction_url="https://dev7-hooperlab.kellton.net/bapi/v2/transaction/create"
+createtransaction_data={
+    "type": "SVC_TYPE_1154",
+    "platformType": "SVC_FORM",
+    "fields": {
+    "Image_Upload": {
+        },
+    "Student_Name": {
+        "value": "sirisha"
+     },
+    "Date_of_birth": {
+        "value": "2003-05-09"
+     }
+    },
+    "refId": "65cb425e9dc3564c6b3c00bc",
+    "pAccId": "65d6ed899dc35685be546b53"
+}
+createtransaction_header={
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + access_token
+    }
+createtransaction_response=requests.post(url=createtransaction_url,headers=createtransaction_header,data=json.dumps(createtransaction_data))
+if createtransaction_response.status_code == 200:
+    data = createtransaction_response.json()
+    print("Transaction created:")
+    print(data)
+else:
+    print("Error: Failed to create transaction.")
+
+
+
+#update transaction
+update_url="https://dev7-hooperlab.kellton.net/bapi/v2/transaction/update/65f9a75c9dc35608fe443718"
+update_data={
+    "fields": {
+        "Image_Upload": {
+            },
+        "Student_Name": {
+            "value": "sirisha"
+            },
+        "Date_of_birth": {
+            "value": "2003-05-09"
+            },
+        },
+    "pAccId": "65d6ed899dc35685be546b53"
+}
+update_header={
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + access_token
+}
+update_response= requests.post(url=update_url,headers=update_header,data=json.dumps(update_data))
+if update_response.status_code == 200:
+    data = update_response.json()
+    print("Transaction updated:")
+    print("Updated transaction:", data)
+else:
+    print("Error: Failed to update transaction.")
+
+
+
+#dashboard
+dashboard_url="https://dev7-hooperlab.kellton.net/bapi/v2/service/dashboard/65d7c19d9dc35685be546c30"
+dashboard_header={
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + access_token    
+}
+dashboard_response=requests.get(url=dashboard_url,headers=dashboard_header)
+if dashboard_response.status_code == 200:
+    data = dashboard_response.json()
+    print("View dashboard:")
+    print("Dashboard data:", data)
+else:
+    print("Error: Failed to fetch dashboard data.")
+
+
+
+
+#logout
+logout_url="https://dev7-hooperlab.kellton.net/bapi/uaa/oauth/revoke/token"
+logout_header={
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + access_token    
+}
+logout_response=requests.get(url=logout_url,headers=logout_header)
+if logout_response.status_code == 200:
+    print("Logout successful.")
+else:
+    print("Error: Logout failed with status code", logout_response.status_code)
